@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      PORT: 5000
+      AUTH_SERVICE_URL: http://auth-service:5002
+      BLOOD_SERVICE_URL: http://blood-service:5003
+    depends_on:
+      - auth-service
+      - blood-service
+    restart: unless-stopped
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "5002:5002"
+    env_file:
+      - .env
+    environment:
+      PORT: 5002
+      JWT_EXPIRES_IN: 1d
+    restart: unless-stopped
+
+  blood-service:
+    build: ./blood-service
+    container_name: blood-service
+    ports:
+      - "5003:5003"
+    env_file:
+      - .env
+    environment:
+      PORT: 5003
+    depends_on:
+      - auth-service
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
