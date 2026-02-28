@@ -1,5 +1,5 @@
-const AUTH_BASE_URL = import.meta.env.VITE_AUTH_BASE_URL || 'http://localhost:5002';
-const BLOOD_BASE_URL = import.meta.env.VITE_BLOOD_BASE_URL || 'http://localhost:5003';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const buildHeaders = (options = {}) => {
   const headers = {
@@ -11,7 +11,7 @@ const buildHeaders = (options = {}) => {
 
 export const authApi = {
   async login({ email, password }) {
-    const res = await fetch(`${AUTH_BASE_URL}/auth/login`, {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: buildHeaders(),
       body: JSON.stringify({ email, password }),
@@ -24,7 +24,7 @@ export const authApi = {
   },
 
   async register({ name, email, password, role }) {
-    const res = await fetch(`${AUTH_BASE_URL}/auth/register`, {
+    const res = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: buildHeaders(),
       body: JSON.stringify({ name, email, password, role }),
@@ -37,22 +37,21 @@ export const authApi = {
   },
 };
 
-const buildAuthHeaders = ({ token, userId, role }) => {
-  if (!token || !userId || !role) {
-    throw new Error('Missing auth information');
+const buildAuthHeaders = (auth) => {
+  const token = auth?.token;
+  if (!token) {
+    throw new Error('Missing auth token');
   }
   return buildHeaders({
     headers: {
       Authorization: `Bearer ${token}`,
-      'X-User-Id': userId,
-      'X-Role': role,
     },
   });
 };
 
 export const bloodApi = {
   async subscribe({ subscription, auth }) {
-    const res = await fetch(`${BLOOD_BASE_URL}/blood/user/subscribe`, {
+    const res = await fetch(`${API_BASE_URL}/blood/user/subscribe`, {
       method: 'POST',
       headers: buildAuthHeaders(auth),
       body: JSON.stringify(subscription),
@@ -65,7 +64,7 @@ export const bloodApi = {
   },
 
   async getSubscriptions(auth) {
-    const res = await fetch(`${BLOOD_BASE_URL}/blood/user/subscriptions`, {
+    const res = await fetch(`${API_BASE_URL}/blood/user/subscriptions`, {
       headers: buildAuthHeaders(auth),
     });
     if (!res.ok) {
@@ -76,7 +75,7 @@ export const bloodApi = {
   },
 
   async addBloodInventory({ blood, auth }) {
-    const res = await fetch(`${BLOOD_BASE_URL}/blood/admin/blood`, {
+    const res = await fetch(`${API_BASE_URL}/blood/admin/blood`, {
       method: 'POST',
       headers: buildAuthHeaders(auth),
       body: JSON.stringify(blood),
@@ -89,7 +88,7 @@ export const bloodApi = {
   },
 
   async getBloodInventory(auth) {
-    const res = await fetch(`${BLOOD_BASE_URL}/blood/admin/blood`, {
+    const res = await fetch(`${API_BASE_URL}/blood/admin/blood`, {
       headers: buildAuthHeaders(auth),
     });
     if (!res.ok) {
@@ -100,7 +99,7 @@ export const bloodApi = {
   },
 
   async getAvailability(auth) {
-    const res = await fetch(`${BLOOD_BASE_URL}/blood/user/availability`, {
+    const res = await fetch(`${API_BASE_URL}/blood/user/availability`, {
       headers: buildAuthHeaders(auth),
     });
     if (!res.ok) {
@@ -111,7 +110,7 @@ export const bloodApi = {
   },
 
   async getDemands(auth) {
-    const res = await fetch(`${BLOOD_BASE_URL}/blood/user/demands`, {
+    const res = await fetch(`${API_BASE_URL}/blood/user/demands`, {
       headers: buildAuthHeaders(auth),
     });
     if (!res.ok) {
@@ -122,7 +121,7 @@ export const bloodApi = {
   },
 
   async addDemand({ demand, auth }) {
-    const res = await fetch(`${BLOOD_BASE_URL}/blood/admin/demand`, {
+    const res = await fetch(`${API_BASE_URL}/blood/admin/demand`, {
       method: 'POST',
       headers: buildAuthHeaders(auth),
       body: JSON.stringify(demand),
@@ -135,7 +134,7 @@ export const bloodApi = {
   },
 
   async getAdminDemands(auth) {
-    const res = await fetch(`${BLOOD_BASE_URL}/blood/admin/demands`, {
+    const res = await fetch(`${API_BASE_URL}/blood/admin/demands`, {
       headers: buildAuthHeaders(auth),
     });
     if (!res.ok) {
@@ -145,4 +144,3 @@ export const bloodApi = {
     return res.json();
   },
 };
-
