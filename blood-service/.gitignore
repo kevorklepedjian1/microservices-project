@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+
+# VSCode
+.vscode/
+
+# Pycharm
+.idea/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# SQLite (if you ever use local DB files)
+*.sqlite3
+
+# Docker files (optional, if you build images)
+*.docker
+
+# Node/React frontend (if in same repo)
+node_modules/
+build/
+dist/
+
+# Coverage reports
+htmlcov/
+.coverage
